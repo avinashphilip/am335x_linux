@@ -137,6 +137,7 @@ config  PWM_TIECAP
 	tristate "ECAP PWM support"
 	depends on SOC_AM33XX
 	select PWM_TIPWMSS
+	select PWM_TEST
 	help
 	  PWM driver support for the ECAP APWM controller found on AM33XX
 	  TI SOC
@@ -148,6 +149,7 @@ config  PWM_TIEHRPWM
 	tristate "EHRPWM PWM support"
 	depends on SOC_AM33XX
 	select PWM_TIPWMSS
+	select PWM_TEST
 	help
 	  PWM driver support for the EHRPWM controller found on AM33XX
 	  TI SOC
@@ -190,5 +192,15 @@ config PWM_VT8500
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called pwm-vt8500.
+
+config  PWM_TEST
+	tristate "PWM TEST support" if SOC_AM33XX && (PWM_TIEHRPWM || PWM_TIECAP)
+
+	help
+	  Test driver support for the EHRPWM PWM driver found on AM33XX
+	  TI SOC
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called pwm_ehrpwm.
 
 endif

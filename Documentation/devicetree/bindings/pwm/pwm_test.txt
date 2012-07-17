@@ -1,0 +1,19 @@
+pwm-test bindings
+
+Required properties:
+  - compatible: "pwm-test"
+  - pwms: OF device-tree PWM specification (see PWM binding[0])
+
+Optional properties:
+  - pwm-names: a list of names for the PWM devices specified in the
+               "pwms" property (see PWM binding[0])
+
+[0]: Documentation/devicetree/bindings/pwm/pwm.txt
+
+Example:
+
+	pwm_test: pwm_test{
+		compatible = "pwm_test";
+		pwms = <&pwm 0 5000000 0>;
+		pwm-names = "pwm";
+	};
