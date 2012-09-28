@@ -481,5 +481,12 @@
 				status = "disabled";
 			};
 		};
+
+		elm: elm@48080000 {
+			compatible	= "ti,am33xx-elm";
+			reg = <0x48080000 0x2000>;
+			interrupts = <4>;
+			ti,hwmods = "elm";
+		};
 	};
 };
