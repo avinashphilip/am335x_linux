@@ -50,12 +50,6 @@
 				0x164 0x0	/* eCAP0_in_PWM0_out.eCAP0_in_PWM0_out MODE0 */
 			>;
 		};
-	
-		ehrpwm2_b_pins: pwm_test_pins {
-					pinctrl-single,pins = <
-						0x24 0x4	/* OMAP_MUX_MODE4 */
-						>;
-			};
 	};
 
 	ocp {
@@ -122,16 +116,6 @@
 				status = "okay";
 				pinctrl-names = "default";
 				pinctrl-0 = <&ecap0_pins>;
-			       };
-		};
-
-		epwmss2: epwmss@48304000 {
-			status = "okay";
-
-			ehrpwm2:  ehrpwm@48304200 {
-				status = "okay";
-				pinctrl-names = "default";
-				pinctrl-0 = <&ehrpwm2_b_pins>;
 			};
 		};
 	};
@@ -191,22 +175,11 @@
 		};
 	};
 
-	pwm_test0: pwm_test0{
-		compatible	= "pwm_test";
+	backlight {
+		compatible = "pwm-backlight";
 		pwms = <&ecap0 0 50000 0>;
-		pwm-names = "ecap.0";
-	};
-
-	pwm_test1: pwm_test1{
-		compatible	= "pwm_test";
-		pwms = <&ehrpwm2 0 5000000 0>;
-		pwm-names = "ehrpwm.2";
-	};
-
-	pwm_test2: pwm_test2{
-		compatible	= "pwm_test";
-		pwms = <&ehrpwm2 1 5000000 0>;
-		pwm-names = "ehrpwm.2";
+		brightness-levels = <0 51 53 56 62 75 101 152 255>;
+		default-brightness-level = <8>;
 	};
 };
 
