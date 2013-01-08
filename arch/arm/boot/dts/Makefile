@@ -112,6 +112,7 @@ dtb-$(CONFIG_ARCH_OMAP2PLUS) += omap2420-h4.dtb \
 	omap4-sdp.dtb \
 	omap5-evm.dtb \
 	am335x-evm.dtb \
+	am335x-evm_4.dtb \
 	am335x-evmsk.dtb \
 	am335x-bone.dtb
 dtb-$(CONFIG_ARCH_ORION5X) += orion5x-lacie-ethernet-disk-mini-v2.dtb
