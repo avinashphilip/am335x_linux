@@ -1285,7 +1285,7 @@ static int gpmc_probe_dt(struct platform_device *pdev)
 }
 #endif
 
-static __devinit int gpmc_probe(struct platform_device *pdev)
+static int gpmc_probe(struct platform_device *pdev)
 {
 	int rc;
 	u32 l;
