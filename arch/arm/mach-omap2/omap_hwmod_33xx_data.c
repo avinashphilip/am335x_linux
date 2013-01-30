@@ -1553,6 +1553,7 @@ static struct omap_hwmod am33xx_rtc_hwmod = {
 	.clkdm_name	= "l4_rtc_clkdm",
 	.mpu_irqs	= am33xx_rtc_irqs,
 	.main_clk	= "clk_32768_ck",
+	.flags		= (HWMOD_INIT_NO_IDLE | HWMOD_INIT_NO_RESET),
 	.prcm		= {
 		.omap4	= {
 			.clkctrl_offs	= AM33XX_CM_RTC_RTC_CLKCTRL_OFFSET,
