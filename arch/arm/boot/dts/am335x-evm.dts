@@ -151,6 +151,7 @@
 				gpmc,wr-cycle = <82>;
 				gpmc,wr-access = <40>;
 				gpmc,wr-data-mux-bus = <0>;
+				gpmc,cycle2cycle = <150>;
 
 				#address-cells = <1>;
 				#size-cells = <1>;
