@@ -1198,6 +1198,11 @@ static void __maybe_unused gpmc_read_timings_dt(struct device_node *np,
 	if (!of_property_read_u32(np, "gpmc,wr-cycle", &val))
 		gpmc_t->wr_cycle = val;
 
+	if (!of_property_read_u32(np, "gpmc,cycle2cycle", &val)) {
+		gpmc_t->cycle2cycle_delay = val;
+		gpmc_t->bool_timings.cycle2cyclesamecsen = true;
+	}
+
 	/* only for OMAP3430 */
 	if (!of_property_read_u32(np, "gpmc,wr-access", &val))
 		gpmc_t->wr_access = val;

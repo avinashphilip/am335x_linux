@@ -73,6 +73,8 @@ static int omap2_nand_gpmc_retime(
 	t.we_off = gpmc_t->we_off;
 	t.cs_wr_off = gpmc_t->cs_wr_off;
 	t.wr_cycle = gpmc_t->wr_cycle;
+	t.cycle2cycle_delay = gpmc_t->cycle2cycle_delay;
+	t.bool_timings = gpmc_t->bool_timings;
 
 	/* Configure GPMC */
 	if (gpmc_nand_data->devsize == NAND_BUSWIDTH_16)
