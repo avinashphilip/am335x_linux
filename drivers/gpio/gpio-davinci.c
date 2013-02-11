@@ -21,6 +21,8 @@
 #include <linux/irqdomain.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
 #include <linux/platform_device.h>
 #include <linux/platform_data/gpio-davinci.h>
 #include <linux/syscore_ops.h>
@@ -76,7 +78,8 @@ static inline struct davinci_gpio_regs __iomem *irq2regs(int irq)
 	return g;
 }
 
-static int davinci_gpio_irq_setup(struct platform_device *pdev);
+static int davinci_gpio_irq_setup(struct platform_device *pdev,
+				struct davinci_gpio_platform_data *pdata);
 
 static inline int __davinci_direction(struct gpio_chip *chip,
 			unsigned offset, bool out, int value)
@@ -139,6 +142,50 @@ static void davinci_gpio_set(struct gpio_chip *chip, unsigned offset,
 	__raw_writel((1 << offset), value ? &g->set_data : &g->clr_data);
 }
 
+static struct davinci_gpio_platform_data *davinci_gpio_set_pdata_of(
+						struct platform_device *pdev)
+{
+	struct device_node *dn = pdev->dev.of_node;
+	struct davinci_gpio_platform_data *pdata;
+	u32 val, ret;
+
+	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
+	if (pdata) {
+		ret = of_property_read_u32(dn, "ngpio", &val);
+		if (ret)
+			goto of_err;
+
+		pdata->ngpio = val;
+
+		ret = of_property_read_u32(dn, "gpio_unbanked", &val);
+		if (ret)
+			goto of_err;
+
+		pdata->gpio_unbanked = val;
+
+		ret = of_property_read_u32(dn, "intc_irq_num", &val);
+		if (ret)
+			goto of_err;
+
+		pdata->intc_irq_num = val;
+	}
+
+	return pdata;
+
+of_err:
+	dev_err(&pdev->dev, "Populating pdata from DT failed: err %d\n", ret);
+	return NULL;
+}
+
+static const struct of_device_id davinci_gpio_ids[] = {
+	{
+		.compatible = "ti,davinci-gpio",
+	},
+	{ },
+};
+
+MODULE_DEVICE_TABLE(of, davinci_gpio_ids);
+
 static int davinci_gpio_probe(struct platform_device *pdev)
 {
 	int i, base;
@@ -148,8 +195,10 @@ static int davinci_gpio_probe(struct platform_device *pdev)
 	struct davinci_gpio_regs *regs;
 	struct device *dev = &pdev->dev;
 	struct resource *res;
+	const struct of_device_id *match =
+		of_match_device(of_match_ptr(davinci_gpio_ids), &pdev->dev);
 
-	pdata = dev->platform_data;
+	pdata = match ? davinci_gpio_set_pdata_of(pdev) : dev->platform_data;
 	if (!pdata) {
 		dev_err(dev, "GPIO: No Platform Data Supplied\n");
 		return -EINVAL;
@@ -210,7 +259,7 @@ static int davinci_gpio_probe(struct platform_device *pdev)
 		gpiochip_add(&chips[i].chip);
 	}
 
-	davinci_gpio_irq_setup(pdev);
+	davinci_gpio_irq_setup(pdev, pdata);
 	return 0;
 }
 
@@ -365,18 +414,17 @@ static int gpio_irq_type_unbanked(struct irq_data *data, unsigned trigger)
  * (dm6446) can be set appropriately for GPIOV33 pins.
  */
 
-static int davinci_gpio_irq_setup(struct platform_device *pdev)
+static int davinci_gpio_irq_setup(struct platform_device *pdev,
+				struct davinci_gpio_platform_data *pdata)
 {
 	u32 binten = 0;
 	unsigned gpio, irq, bank;
 	unsigned ngpio, bank_irq;
-	struct davinci_gpio_platform_data *pdata;
 	struct clk *clk;
 	struct davinci_gpio_regs __iomem *g;
 	struct device *dev = &pdev->dev;
 	struct resource *res;
 
-	pdata = dev->platform_data;
 	ngpio = pdata->ngpio;
 	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	if (unlikely(!res)) {
@@ -496,8 +544,9 @@ done:
 static struct platform_driver davinci_gpio_driver = {
 	.probe		= davinci_gpio_probe,
 	.driver		= {
-		.name	= "davinci_gpio",
-		.owner	= THIS_MODULE,
+		.name		= "davinci_gpio",
+		.owner		= THIS_MODULE,
+		.of_match_table	= of_match_ptr(davinci_gpio_ids),
 	},
 };
 
