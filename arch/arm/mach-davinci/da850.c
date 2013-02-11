@@ -36,6 +36,7 @@
 /* SoC specific clock flags */
 #define DA850_CLK_ASYNC3	BIT(16)
 
+#define DA850_GPIO_NUM		144
 #define DA850_PLL1_BASE		0x01e1a000
 #define DA850_TIMER64P2_BASE	0x01f0c000
 #define DA850_TIMER64P3_BASE	0x01f0d000
@@ -1305,6 +1306,7 @@ static struct davinci_soc_info davinci_soc_info_da850 = {
 	.emac_pdata		= &da8xx_emac_pdata,
 	.sram_dma		= DA8XX_SHARED_RAM_BASE,
 	.sram_len		= SZ_128K,
+	.gpio_ctlrs_num		= DIV_ROUND_UP(DA850_GPIO_NUM, 32),
 };
 
 void __init da850_init(void)

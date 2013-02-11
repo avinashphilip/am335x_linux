@@ -27,11 +27,12 @@
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
 #include <linux/mtd/physmap.h>
-#include <linux/platform_device.h>
+#include <linux/platform_data/gpio-davinci.h>
 #include <linux/platform_data/mtd-davinci.h>
 #include <linux/platform_data/mtd-davinci-aemif.h>
 #include <linux/platform_data/spi-davinci.h>
 #include <linux/platform_data/uio_pruss.h>
+#include <linux/platform_device.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/tps6507x.h>
 #include <linux/spi/spi.h>
@@ -1143,6 +1144,12 @@ static struct edma_rsv_info *da850_edma_rsv[2] = {
 	&da850_edma_cc1_rsv,
 };
 
+static struct davinci_gpio_platform_data da8xx_gpio_platform_data = {
+	.ngpio = 144,
+	.gpio_unbanked = 0,
+	.intc_irq_num = DA850_N_CP_INTC_IRQ,
+};
+
 #ifdef CONFIG_CPU_FREQ
 static __init int da850_evm_init_cpufreq(void)
 {
@@ -1448,6 +1455,11 @@ static __init int da850_wl12xx_init(void)
 static __init void da850_evm_init(void)
 {
 	int ret;
+
+	ret = da8xx_register_gpio(&da8xx_gpio_platform_data);
+	if (ret)
+		pr_warning("da850_evm_init: GPIO init failed: %d\n",
+				ret);
 
 	ret = pmic_tps65070_init();
 	if (ret)
