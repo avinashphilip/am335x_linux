@@ -1,0 +1,26 @@
+Davinci GPIO controller bindings
+
+Required Properties:
+- compatible:"ti,davinci-gpio"
+
+- reg: Physical base address of the controller and length of memory mapped
+	region.
+
+- interrupts: The Starting IRQ number for GPIO
+
+- ngpio: The number of GPIO pins supported
+
+- intc_irq_num: The number of IRQs supported by the Interrupt Controller
+
+- gpio_unbanked: The number of GPIOs that have an individual interrupt
+		line to processor.
+
+Example:
+gpio: gpio@1e26000 {
+	compatible = "ti,davinci-gpio";
+	reg = <0x226000 0x1000>;
+	interrupts = <42>;
+	ngpio = <144>;
+	intc_irq_num = <101>;
+	gpio_unbanked = <0>;
+};
