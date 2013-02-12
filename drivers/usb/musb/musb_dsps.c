@@ -124,10 +124,12 @@ struct dsps_glue {
 	struct timer_list timer[2];	/* otg_workaround timer */
 	unsigned long last_timer[2];    /* last timer data for each instance */
 	u32 __iomem *usb_ctrl[2];
+	u32 __iomem *usb_wkup;
 };
 
 #define	DSPS_AM33XX_CONTROL_MODULE_PHYS_0	0x44e10620
 #define	DSPS_AM33XX_CONTROL_MODULE_PHYS_1	0x44e10628
+#define	DSPS_AM33XX_CONTROL_MODULE_WKUP		0x44e10648
 
 static const resource_size_t dsps_control_module_phys[] = {
 	DSPS_AM33XX_CONTROL_MODULE_PHYS_0,
@@ -138,6 +140,9 @@ static const resource_size_t dsps_control_module_phys[] = {
 #define USBPHY_OTG_PWRDN	(1 << 1)
 #define USBPHY_OTGVDET_EN	(1 << 19)
 #define USBPHY_OTGSESSEND_EN	(1 << 20)
+
+#define AM33XX_USB0_WKUP_CTRL_ENABLE    (1 << 0)
+#define AM33XX_USB1_WKUP_CTRL_ENABLE    (1 << 8)
 
 /**
  * musb_dsps_phy_control - phy on/off
@@ -151,19 +156,34 @@ static const resource_size_t dsps_control_module_phys[] = {
  * XXX: This function will be removed once we have a seperate driver for
  * control module
  */
-static void musb_dsps_phy_control(struct dsps_glue *glue, u8 id, u8 on)
+static void musb_dsps_phy_control(struct dsps_glue *glue, u8 id, u8 on, bool wkup)
 {
-	u32 usbphycfg;
+	u32 usbphycfg, usbwkupctrl;
 
+	id = 0;
+	pr_emerg("%s() %d id %d\n", __func__, __LINE__, id);
 	usbphycfg = readl(glue->usb_ctrl[id]);
+	pr_emerg("%s() %d id %d\n", __func__, __LINE__, id);
+	usbwkupctrl = readl(glue->usb_wkup);
 
+	pr_emerg("%s() %d id %d\n", __func__, __LINE__, id);
+	pr_emerg("%s %p\n", __func__,  glue->usb_wkup);
 	if (on) {
 		usbphycfg &= ~(USBPHY_CM_PWRDN | USBPHY_OTG_PWRDN);
 		usbphycfg |= USBPHY_OTGVDET_EN | USBPHY_OTGSESSEND_EN;
 	} else {
 		usbphycfg |= USBPHY_CM_PWRDN | USBPHY_OTG_PWRDN;
+
+		if (wkup)
+			usbwkupctrl |= id ? AM33XX_USB1_WKUP_CTRL_ENABLE :
+				AM33XX_USB0_WKUP_CTRL_ENABLE;
+		else
+			usbwkupctrl &= id ? ~AM33XX_USB1_WKUP_CTRL_ENABLE :
+				~AM33XX_USB0_WKUP_CTRL_ENABLE;
+
 	}
 
+	writel(usbwkupctrl, glue->usb_wkup);
 	writel(usbphycfg, glue->usb_ctrl[id]);
 }
 /**
@@ -434,7 +454,7 @@ static int dsps_musb_init(struct musb *musb)
 	dsps_writel(reg_base, wrp->control, (1 << wrp->reset));
 
 	/* Start the on-chip PHY and its PLL. */
-	musb_dsps_phy_control(glue, pdev->id, 1);
+	musb_dsps_phy_control(glue, pdev->id, 1, false);
 
 	musb->isr = dsps_interrupt;
 
@@ -462,7 +482,7 @@ static int dsps_musb_exit(struct musb *musb)
 	del_timer_sync(&glue->timer[pdev->id]);
 
 	/* Shutdown the on-chip PHY and its PLL. */
-	musb_dsps_phy_control(glue, pdev->id, 0);
+	musb_dsps_phy_control(glue, pdev->id, 1, false);
 
 	/* NOP driver needs change if supporting dual instance */
 	usb_put_phy(musb->xceiv);
@@ -495,6 +515,21 @@ static int dsps_create_musb_pdev(struct dsps_glue *glue, u8 id)
 	struct resource	resources[2];
 	char res_name[11];
 	int ret;
+
+	resources[0].start =DSPS_AM33XX_CONTROL_MODULE_WKUP ;
+	resources[0].end = resources[0].start + SZ_4 - 1;
+	resources[0].flags = IORESOURCE_MEM;
+
+	if (!id) {
+	glue->usb_wkup = devm_request_and_ioremap(&pdev->dev, resources);
+	if (glue->usb_wkup == NULL) {
+		dev_err(dev, "Failed to obtain usb_ctrl%d memory\n", id);
+		ret = -ENODEV;
+		goto err0;
+	}
+	pr_emerg("%s %p\n", __func__,  glue->usb_wkup);
+	pr_emerg("%s %p\n", __func__,  pdev);
+	}
 
 	resources[0].start = dsps_control_module_phys[id];
 	resources[0].end = resources[0].start + SZ_4 - 1;
@@ -650,6 +685,7 @@ static int dsps_probe(struct platform_device *pdev)
 
 	/* create the child platform device for all instances of musb */
 	for (i = 0; i < wrp->instances ; i++) {
+		pr_emerg("%s() %d\n", __func__, i);
 		ret = dsps_create_musb_pdev(glue, i);
 		if (ret != 0) {
 			dev_err(&pdev->dev, "failed to create child pdev\n");
@@ -698,8 +734,9 @@ static int dsps_suspend(struct device *dev)
 	const struct dsps_musb_wrapper *wrp = glue->wrp;
 	int i;
 
+	pr_emerg("%s() %d %x\n", __func__, __LINE__, pdev);
 	for (i = 0; i < wrp->instances; i++)
-		musb_dsps_phy_control(glue, i, 0);
+		musb_dsps_phy_control(glue, pdev->id, 0, false);
 
 	return 0;
 }
@@ -712,7 +749,7 @@ static int dsps_resume(struct device *dev)
 	int i;
 
 	for (i = 0; i < wrp->instances; i++)
-		musb_dsps_phy_control(glue, i, 1);
+		musb_dsps_phy_control(glue, pdev->id, 1, false);
 
 	return 0;
 }
