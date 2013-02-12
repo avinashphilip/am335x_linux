@@ -63,6 +63,15 @@
 				>;
 			};
 		};
+		gpio: gpio@1e26000 {
+			compatible = "ti,davinci-gpio";
+			reg = <0x226000 0x1000>;
+			interrupts = <42>;
+			ngpio = <144>;
+			intc_irq_num = <101>;
+			gpio_unbanked = <0>;
+			status = "disabled";
+		};
 		serial0: serial@1c42000 {
 			compatible = "ns16550a";
 			reg = <0x42000 0x100>;
