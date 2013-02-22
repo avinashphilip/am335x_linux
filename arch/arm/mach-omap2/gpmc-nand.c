@@ -36,13 +36,6 @@ static struct resource gpmc_nand_resource[] = {
 	},
 };
 
-static struct platform_device gpmc_nand_device = {
-	.name		= "omap2-nand",
-	.id		= 0,
-	.num_resources	= ARRAY_SIZE(gpmc_nand_resource),
-	.resource	= gpmc_nand_resource,
-};
-
 static int omap2_nand_gpmc_retime(
 				struct omap_nand_platform_data *gpmc_nand_data,
 				struct gpmc_timings *gpmc_t)
@@ -113,13 +106,24 @@ static bool gpmc_hwecc_bch_capable(enum omap_ecc ecc_opt)
 	return 1;
 }
 
-int gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data,
+int gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data
 		   struct gpmc_timings *gpmc_t)
 {
 	int err	= 0;
-	struct device *dev = &gpmc_nand_device.dev;
+	struct device *dev;
+	static struct platform_device *gpmc_nand_device;
 
-	gpmc_nand_device.dev.platform_data = gpmc_nand_data;
+	gpmc_nand_device = platform_device_alloc("omap2-nand",
+			gpmc_nand_data->cs);
+	if (!gpmc_nand_device) {
+		pr_err("Failed to allocate platform device for omap2-nand\n");
+		return -EINVAL;
+
+	}
+
+	dev = &gpmc_nand_device->dev;
+	gpmc_nand_device->num_resources	= ARRAY_SIZE(gpmc_nand_resource),
+	gpmc_nand_device->resource	= gpmc_nand_resource,
 
 	err = gpmc_cs_request(gpmc_nand_data->cs, NAND_IO_SIZE,
 				(unsigned long *)&gpmc_nand_resource[0].start);
@@ -154,7 +158,9 @@ int gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data,
 	if (!gpmc_hwecc_bch_capable(gpmc_nand_data->ecc_opt))
 		return -EINVAL;
 
-	err = platform_device_register(&gpmc_nand_device);
+	platform_device_add_data(gpmc_nand_device, gpmc_nand_data);
+
+	err = platform_device_add(gpmc_nand_device);
 	if (err < 0) {
 		dev_err(dev, "Unable to register NAND device\n");
 		goto out_free_cs;
