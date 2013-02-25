@@ -34,17 +34,8 @@
 static unsigned onenand_flags;
 static unsigned latency;
 
-static struct omap_onenand_platform_data *gpmc_onenand_data;
-
 static struct resource gpmc_onenand_resource = {
 	.flags		= IORESOURCE_MEM,
-};
-
-static struct platform_device gpmc_onenand_device = {
-	.name		= "omap2-onenand",
-	.id		= -1,
-	.num_resources	= 1,
-	.resource	= &gpmc_onenand_resource,
 };
 
 static struct gpmc_timings omap2_onenand_calc_async_timings(void)
@@ -293,7 +284,9 @@ static int gpmc_set_sync_mode(int cs, struct gpmc_timings *t)
 	return gpmc_cs_set_timings(cs, t);
 }
 
-static int omap2_onenand_setup_async(void __iomem *onenand_base)
+static int omap2_onenand_setup_async(
+		struct omap_onenand_platform_data *gpmc_onenand_data,
+		void __iomem *onenand_base)
 {
 	struct gpmc_timings t;
 	int ret;
@@ -311,7 +304,9 @@ static int omap2_onenand_setup_async(void __iomem *onenand_base)
 	return 0;
 }
 
-static int omap2_onenand_setup_sync(void __iomem *onenand_base, int *freq_ptr)
+static int omap2_onenand_setup_sync(
+		struct omap_onenand_platform_data *gpmc_onenand_data,
+		void __iomem *onenand_base, int *freq_ptr)
 {
 	int ret, freq = *freq_ptr;
 	struct gpmc_timings t;
@@ -335,34 +330,35 @@ static int omap2_onenand_setup_sync(void __iomem *onenand_base, int *freq_ptr)
 	return 0;
 }
 
-static int gpmc_onenand_setup(void __iomem *onenand_base, int *freq_ptr)
+static int gpmc_onenand_setup(
+		struct omap_onenand_platform_data *gpmc_onenand_data,
+		void __iomem *onenand_base, int *freq_ptr)
 {
-	struct device *dev = &gpmc_onenand_device.dev;
 	unsigned l = ONENAND_SYNC_READ | ONENAND_SYNC_READWRITE;
 	int ret;
 
-	ret = omap2_onenand_setup_async(onenand_base);
+	ret = omap2_onenand_setup_async(gpmc_onenand_data, onenand_base);
 	if (ret) {
-		dev_err(dev, "unable to set to async mode\n");
+		pr_err("unable to set to async mode\n");
 		return ret;
 	}
 
 	if (!(gpmc_onenand_data->flags & l))
 		return 0;
 
-	ret = omap2_onenand_setup_sync(onenand_base, freq_ptr);
+	ret = omap2_onenand_setup_sync(gpmc_onenand_data, onenand_base,
+			freq_ptr);
 	if (ret)
-		dev_err(dev, "unable to set to sync mode\n");
+		pr_err("unable to set to sync mode\n");
 	return ret;
 }
 
 void gpmc_onenand_init(struct omap_onenand_platform_data *_onenand_data)
 {
 	int err;
+	struct platform_device *gpmc_onenand_device;
 
-	gpmc_onenand_data = _onenand_data;
 	gpmc_onenand_data->onenand_setup = gpmc_onenand_setup;
-	gpmc_onenand_device.dev.platform_data = gpmc_onenand_data;
 
 	if (cpu_is_omap24xx() &&
 			(gpmc_onenand_data->flags & ONENAND_SYNC_READWRITE)) {
@@ -386,7 +382,11 @@ void gpmc_onenand_init(struct omap_onenand_platform_data *_onenand_data)
 	gpmc_onenand_resource.end = gpmc_onenand_resource.start +
 							ONENAND_IO_SIZE - 1;
 
-	if (platform_device_register(&gpmc_onenand_device) < 0) {
+	gpmc_onenand_device = platform_device_register_resndata(NULL,
+			"omap2-onenand", gpmc_onenand_data->cs,
+			&gpmc_onenand_resource, sizeof(gpmc_onenand_resource),
+			gpmc_onenand_data, sizeof(gpmc_onenand_data));
+	if (!gpmc_onenand_device) {
 		pr_err("%s: Unable to register OneNAND device\n", __func__);
 		gpmc_cs_free(gpmc_onenand_data->cs);
 		return;

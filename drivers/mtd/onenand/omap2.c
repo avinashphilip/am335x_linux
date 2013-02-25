@@ -59,7 +59,8 @@ struct omap2_onenand {
 	struct completion dma_done;
 	int dma_channel;
 	int freq;
-	int (*setup)(void __iomem *base, int *freq_ptr);
+	int (*setup)(struct omap_onenand_platform_data *pdata,
+			void __iomem *base, int *freq_ptr);
 	struct regulator *regulator;
 	u8 flags;
 };
@@ -584,7 +585,7 @@ static int __adjust_timing(struct device *dev, void *data)
 
 	/* DMA is not in use so this is all that is needed */
 	/* Revisit for OMAP3! */
-	ret = c->setup(c->onenand.base, &c->freq);
+	ret = c->setup(dev->platform_data, c->onenand.base, &c->freq);
 
 	return ret;
 }
@@ -684,7 +685,7 @@ static int omap2_onenand_probe(struct platform_device *pdev)
 	}
 
 	if (pdata->onenand_setup != NULL) {
-		r = pdata->onenand_setup(c->onenand.base, &c->freq);
+		r = pdata->onenand_setup(pdata, c->onenand.base, &c->freq);
 		if (r < 0) {
 			dev_err(&pdev->dev, "Onenand platform setup failed: "
 				"%d\n", r);

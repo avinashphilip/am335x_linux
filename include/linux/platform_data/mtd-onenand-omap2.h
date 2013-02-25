@@ -19,12 +19,15 @@
 #define ONENAND_SYNC_READWRITE	(1 << 1)
 #define	ONENAND_IN_OMAP34XX	(1 << 2)
 
+struct omap_onenand_platform_data;
 struct omap_onenand_platform_data {
 	int			cs;
 	int			gpio_irq;
 	struct mtd_partition	*parts;
 	int			nr_parts;
-	int			(*onenand_setup)(void __iomem *, int *freq_ptr);
+	int			(*onenand_setup)(
+			struct omap_onenand_platform_data *pdata, void __iomem *,
+			int *freq_ptr);
 	int			dma_channel;
 	u8			flags;
 	u8			regulator_can_sleep;
