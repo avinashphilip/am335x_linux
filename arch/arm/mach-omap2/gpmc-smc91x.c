@@ -22,8 +22,6 @@
 
 #include "soc.h"
 
-static struct omap_smc91x_platform_data *gpmc_cfg;
-
 static struct resource gpmc_smc91x_resources[] = {
 	[0] = {
 		.flags		= IORESOURCE_MEM,
@@ -55,7 +53,7 @@ static struct platform_device gpmc_smc91x_device = {
  * http://www.smsc.com/main/catalog/lan91c96.html
  * REVISIT: Level shifters can add at least to the access latency.
  */
-static int smc91c96_gpmc_retime(void)
+static int smc91c96_gpmc_retime(struct omap_smc91x_platform_data *gpmc_cfg)
 {
 	struct gpmc_timings t;
 	struct gpmc_device_timings dev_t;
@@ -118,6 +116,7 @@ void __init gpmc_smc91x_init(struct omap_smc91x_platform_data *board_data)
 {
 	unsigned long cs_mem_base;
 	int ret;
+	struct omap_smc91x_platform_data *gpmc_cfg;
 
 	gpmc_cfg = board_data;
 
@@ -134,7 +133,7 @@ void __init gpmc_smc91x_init(struct omap_smc91x_platform_data *board_data)
 	gpmc_smc91x_resources[1].flags |= (gpmc_cfg->flags & IRQF_TRIGGER_MASK);
 
 	if (gpmc_cfg->retime) {
-		ret = gpmc_cfg->retime();
+		ret = gpmc_cfg->retime(gpmc_cfg);
 		if (ret != 0)
 			goto free1;
 	}

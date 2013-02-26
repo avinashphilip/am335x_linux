@@ -22,7 +22,7 @@ struct omap_smc91x_platform_data {
 	int	gpio_reset;
 	int	wait_pin;	/* Optional GPMC_CONFIG1_WAITPINSELECT */
 	u32	flags;
-	int	(*retime)(void);
+	int	(*retime)(struct omap_smc91x_platform_data *);
 };
 
 #if defined(CONFIG_SMC91X) || \
