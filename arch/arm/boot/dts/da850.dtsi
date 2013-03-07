@@ -107,6 +107,36 @@
 			reg = <0x21000 0x1000>;
 			status = "disabled";
 		};
+		ehrpwm0: ehrpwm@01f00000 {
+			compatible = "ti,da850-ehrpwm", "ti,am33xx-ehrpwm";
+			#pwm-cells = <3>;
+			reg = <0x300000 0x2000>;
+			status = "disabled";
+		};
+		ehrpwm1: ehrpwm@01f02000 {
+			compatible = "ti,da850-ehrpwm", "ti,am33xx-ehrpwm";
+			#pwm-cells = <3>;
+			reg = <0x302000 0x2000>;
+			status = "disabled";
+		};
+		ecap0: ecap@01f06000 {
+			compatible = "ti,da850-ecap", "ti,am33xx-ecap";
+			#pwm-cells = <3>;
+			reg = <0x306000 0x80>;
+			status = "disabled";
+		};
+		ecap1: ecap@01f07000 {
+			compatible = "ti,da850-ecap", "ti,am33xx-ecap";
+			#pwm-cells = <3>;
+			reg = <0x307000 0x80>;
+			status = "disabled";
+		};
+		ecap2: ecap@01f08000 {
+			compatible = "ti,da850-ecap", "ti,am33xx-ecap";
+			#pwm-cells = <3>;
+			reg = <0x308000 0x80>;
+			status = "disabled";
+		};
 	};
 	nand_cs3@62000000 {
 		compatible = "ti,davinci-nand";
