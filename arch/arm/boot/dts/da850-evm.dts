@@ -23,6 +23,11 @@
 					0x14 0x00000002 0x0000000f /* EPWM1A */
 				>;
 			};
+			ecap1_pins: test_pins {
+				pinctrl-single,bits = <
+					0x4 0x40000000 0xf0000000 /* ECAP1 */
+				>;
+			};
 		};
 		serial0: serial@1c42000 {
 			status = "okay";
@@ -50,16 +55,25 @@
 			pinctrl-names = "default";
 			pinctrl-0 = <&ehrpwm1_pins>;
 		};
+		ecap1: ecap@01f07000 {
+			status = "okay";
+			pinctrl-names = "default";
+			pinctrl-0 = <&ecap1_pins>;
+		};
 	};
 	nand_cs3@62000000 {
 		status = "okay";
 		pinctrl-names = "default";
 		pinctrl-0 = <&nand_cs3_pins>;
 	};
-	backlight {
-		compatible = "pwm-backlight";
+	pwm_test0: pwm_test0{
+		compatible = "pwm_test";
 		pwms = <&ehrpwm1 0 10000000 0>;
-		brightness-levels = <0 51 53 56 62 75 101 152 255>;
-		default-brightness-level = <8>;
-       };
+		pwm-names = "ehrpwm.1";
+	};
+	pwm_test1: pwm_test1{
+		compatible = "pwm_test";
+		pwms = <&ecap1 0 10000000 0>;
+		pwm-names = "ecap.1";
+	};
 };
