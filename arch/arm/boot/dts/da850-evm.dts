@@ -50,6 +50,28 @@
 			pinctrl-names = "default";
 			pinctrl-0 = <&ehrpwm1_pins>;
 		};
+
+		lcdc: lcdc@01e13000 {
+			status = "okay";
+			pinctrl-names = "default";
+			pinctrl-0 = <&lcdc_pins>;
+
+			display-timings {
+				480x272p62 {
+					clock-frequency = <7833600>;
+					hactive = <480>;
+					vactive = <272>;
+					hfront-porch = <2>;
+					hback-porch = <2>;
+					hsync-len = <41>;
+					vback-porch = <2>;
+					vfront-porch = <2>;
+					vsync-len = <10>;
+					hsync-active = <1>;
+					vsync-active = <1>;
+				};
+			};
+		};
 	};
 	nand_cs3@62000000 {
 		status = "okay";
