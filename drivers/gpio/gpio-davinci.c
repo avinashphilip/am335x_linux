@@ -9,12 +9,13 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
-#include <linux/gpio.h>
-#include <linux/errno.h>
-#include <linux/kernel.h>
+
 #include <linux/clk.h>
 #include <linux/err.h>
+#include <linux/errno.h>
+#include <linux/gpio.h>
 #include <linux/io.h>
+#include <linux/kernel.h>
 
 #include <asm/mach/irq.h>
 
@@ -247,8 +248,8 @@ static struct irq_chip gpio_irqchip = {
 static void
 gpio_irq_handler(unsigned irq, struct irq_desc *desc)
 {
-	struct davinci_gpio_regs __iomem *g;
 	u32 mask = 0xffff;
+	struct davinci_gpio_regs __iomem *g;
 	struct davinci_gpio_controller *d;
 
 	d = (struct davinci_gpio_controller *)irq_desc_get_handler_data(desc);
@@ -345,12 +346,12 @@ static int gpio_irq_type_unbanked(struct irq_data *data, unsigned trigger)
 
 static int __init davinci_gpio_irq_setup(void)
 {
-	unsigned	gpio, irq, bank;
-	struct clk	*clk;
-	u32		binten = 0;
-	unsigned	ngpio, bank_irq;
+	u32 binten = 0;
+	unsigned gpio, irq, bank;
+	unsigned ngpio, bank_irq;
+	struct clk *clk;
 	struct davinci_soc_info *soc_info = &davinci_soc_info;
-	struct davinci_gpio_regs	__iomem *g;
+	struct davinci_gpio_regs __iomem *g;
 
 	ngpio = soc_info->gpio_num;
 
