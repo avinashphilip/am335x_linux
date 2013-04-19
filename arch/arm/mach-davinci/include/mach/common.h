@@ -64,11 +64,6 @@ struct davinci_soc_info {
 	unsigned long			intc_irq_num;
 	u32				*intc_host_map;
 	struct davinci_timer_info	*timer_info;
-	int				gpio_type;
-	u32				gpio_base;
-	unsigned			gpio_num;
-	unsigned			gpio_irq;
-	unsigned			gpio_unbanked;
 	struct davinci_gpio_controller	*gpio_ctlrs;
 	int				gpio_ctlrs_num;
 	struct platform_device		*serial_dev;
