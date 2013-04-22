@@ -927,6 +927,7 @@ enum davinci_da850_index {
 	DA850_GPIO6_9,
 	DA850_GPIO6_10,
 	DA850_GPIO6_13,
+	DA850_GPIO7_4,
 	DA850_RTC_ALARM,
 
 	/* VPIF Capture */
