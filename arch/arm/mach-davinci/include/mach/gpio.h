@@ -32,6 +32,7 @@
  */
 static inline void gpio_set_value(unsigned gpio, int value)
 {
+	pr_emerg("%s() %d\n", __func__, __LINE__);
 	if (__builtin_constant_p(value) && gpio < davinci_soc_info.gpio_num) {
 		struct davinci_gpio_controller *ctlr;
 		u32				mask;
@@ -48,6 +49,7 @@ static inline void gpio_set_value(unsigned gpio, int value)
 		}
 	}
 
+	pr_emerg("%s() %d\n", __func__, __LINE__);
 	__gpio_set_value(gpio, value);
 }
 

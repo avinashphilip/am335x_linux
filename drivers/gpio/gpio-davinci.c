@@ -139,6 +139,8 @@ davinci_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 	struct davinci_gpio_controller *d = chip2controller(chip);
 	struct davinci_gpio_regs __iomem *g = d->regs;
 
+	dump_stack();
+	pr_emerg("%s() %d\n", __func__, __LINE__);
 	__raw_writel((1 << offset), value ? &g->set_data : &g->clr_data);
 }
 

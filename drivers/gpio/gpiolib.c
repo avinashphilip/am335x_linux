@@ -1923,6 +1923,7 @@ static void gpiod_set_value(struct gpio_desc *desc, int value)
 {
 	struct gpio_chip	*chip;
 
+	pr_emerg("%s() %d\n", __func__, __LINE__);
 	if (!desc)
 		return;
 	chip = desc->chip;
@@ -1939,6 +1940,7 @@ static void gpiod_set_value(struct gpio_desc *desc, int value)
 
 void __gpio_set_value(unsigned gpio, int value)
 {
+	pr_emerg("%s() %d\n", __func__, __LINE__);
 	return gpiod_set_value(gpio_to_desc(gpio), value);
 }
 EXPORT_SYMBOL_GPL(__gpio_set_value);
@@ -2023,6 +2025,7 @@ static void gpiod_set_value_cansleep(struct gpio_desc *desc, int value)
 {
 	struct gpio_chip	*chip;
 
+	pr_emerg("%s() %d\n", __func__, __LINE__);
 	might_sleep_if(extra_checks);
 	if (!desc)
 		return;

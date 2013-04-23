@@ -178,6 +178,7 @@ static int bgpio_simple_dir_in(struct gpio_chip *gc, unsigned int gpio)
 static int bgpio_simple_dir_out(struct gpio_chip *gc, unsigned int gpio,
 				int val)
 {
+	pr_emerg("%s() %d\n", __func__, __LINE__);
 	gc->set(gc, gpio, val);
 
 	return 0;
