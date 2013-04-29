@@ -35,6 +35,7 @@
 #include <linux/platform_data/spi-davinci.h>
 #include <mach/gpio-davinci.h>
 
+#define GPIO_TO_PIN(bank, gpio)	(16 * (bank) + (gpio))
 #define DA830_EVM_PHY_ID		""
 /*
  * USB1 VBUS is controlled by GPIO1[15], over-current is reported on GPIO2[4].
