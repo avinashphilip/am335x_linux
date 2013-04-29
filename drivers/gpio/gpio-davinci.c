@@ -24,6 +24,7 @@
 #include <linux/platform_device.h>
 #include <linux/platform_data/gpio-davinci.h>
 #include <linux/syscore_ops.h>
+#include <mach/gpio-davinci.h>
 
 
 #include <asm/mach/irq.h>

@@ -31,6 +31,7 @@
 #include <mach/common.h>
 #include <linux/platform_data/mtd-davinci.h>
 #include <mach/da8xx.h>
+#include <mach/gpio-davinci.h>
 #include <linux/platform_data/usb-davinci.h>
 #include <linux/platform_data/mtd-davinci-aemif.h>
 #include <linux/platform_data/spi-davinci.h>
