@@ -27,6 +27,7 @@
 #include <linux/platform_device.h>
 #include <linux/platform_data/gpio-davinci.h>
 #include <linux/syscore_ops.h>
+#include <mach/gpio-davinci.h>
 
 struct davinci_gpio_regs {
 	u32	dir;
