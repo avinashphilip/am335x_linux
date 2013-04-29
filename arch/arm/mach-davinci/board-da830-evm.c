@@ -33,6 +33,7 @@
 #include <linux/platform_data/usb-davinci.h>
 #include <linux/platform_data/mtd-davinci-aemif.h>
 #include <linux/platform_data/spi-davinci.h>
+#include <mach/gpio-davinci.h>
 
 #define DA830_EVM_PHY_ID		""
 /*
