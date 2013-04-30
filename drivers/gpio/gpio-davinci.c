@@ -68,9 +68,6 @@ static inline struct davinci_gpio_regs __iomem *irq2regs(int irq)
 
 static int __init davinci_gpio_irq_setup(void);
 
-/*--------------------------------------------------------------------------*/
-
-/* board setup code *MUST* setup pinmux and enable the GPIO clock. */
 static inline int __davinci_direction(struct gpio_chip *chip,
 			unsigned offset, bool out, int value)
 {
@@ -99,8 +96,8 @@ static int davinci_direction_in(struct gpio_chip *chip, unsigned offset)
 	return __davinci_direction(chip, offset, false, 0);
 }
 
-static int
-davinci_direction_out(struct gpio_chip *chip, unsigned offset, int value)
+static int davinci_direction_out(struct gpio_chip *chip, unsigned offset,
+		int value)
 {
 	return __davinci_direction(chip, offset, true, value);
 }
@@ -123,8 +120,8 @@ static int davinci_gpio_get(struct gpio_chip *chip, unsigned offset)
 /*
  * Assuming the pin is muxed as a gpio output, set its output value.
  */
-static void
-davinci_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
+static void davinci_gpio_set(struct gpio_chip *chip, unsigned offset,
+		int value)
 {
 	struct davinci_gpio_controller *d = chip2controller(chip);
 	struct davinci_gpio_regs __iomem *g = d->regs;
@@ -192,7 +189,6 @@ static int __init davinci_gpio_setup(void)
 }
 pure_initcall(davinci_gpio_setup);
 
-/*--------------------------------------------------------------------------*/
 /*
  * We expect irqs will normally be set up as input pins, but they can also be
  * used as output pins ... which is convenient for testing.
@@ -245,8 +241,7 @@ static struct irq_chip gpio_irqchip = {
 	.flags		= IRQCHIP_SET_TYPE_MASKED,
 };
 
-static void
-gpio_irq_handler(unsigned irq, struct irq_desc *desc)
+static void gpio_irq_handler(unsigned irq, struct irq_desc *desc)
 {
 	u32 mask = 0xffff;
 	struct davinci_gpio_regs __iomem *g;
@@ -369,7 +364,8 @@ static int __init davinci_gpio_irq_setup(void)
 	}
 	clk_prepare_enable(clk);
 
-	/* Arrange gpio_to_irq() support, handling either direct IRQs or
+	/* 
+	 * Arrange gpio_to_irq() support, handling either direct IRQs or
 	 * banked IRQs.  Having GPIOs in the first GPIO bank use direct
 	 * IRQs, while the others use banked IRQs, would need some setup
 	 * tweaks to recognize hardware which can do that.
@@ -451,7 +447,8 @@ static int __init davinci_gpio_irq_setup(void)
 	}
 
 done:
-	/* BINTEN -- per-bank interrupt enable. genirq would also let these
+	/* 
+	 * BINTEN -- per-bank interrupt enable. genirq would also let these
 	 * bits be set/cleared dynamically.
 	 */
 	__raw_writel(binten, gpio_base + 0x08);
