@@ -14,6 +14,7 @@
 
 #include <linux/compiler.h>
 #include <linux/types.h>
+#include <linux/ioport.h>
 
 extern void davinci_timer_init(void);
 
@@ -83,6 +84,7 @@ extern void davinci_common_init(struct davinci_soc_info *soc_info);
 extern void davinci_init_ide(void);
 void davinci_restart(char mode, const char *cmd);
 void davinci_init_late(void);
+int davinci_gpio_register(struct resource *res, int size, void *pdata);
 
 #ifdef CONFIG_DAVINCI_RESET_CLOCKS
 int davinci_clk_disable_unused(void);
