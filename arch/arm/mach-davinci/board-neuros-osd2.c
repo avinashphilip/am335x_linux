@@ -37,6 +37,7 @@
 #include <linux/platform_data/mtd-davinci.h>
 #include <linux/platform_data/mmc-davinci.h>
 #include <linux/platform_data/usb-davinci.h>
+#include <linux/platform_data/gpio-davinci.h>
 
 #include "davinci.h"
 

@@ -28,9 +28,11 @@
 
 #include <linux/platform_data/i2c-davinci.h>
 #include <mach/serial.h>
+#include <mach/common.h>
 #include <linux/platform_data/mtd-davinci.h>
 #include <linux/platform_data/mmc-davinci.h>
 #include <linux/platform_data/usb-davinci.h>
+#include <linux/platform_data/gpio-davinci.h>
 
 #include "davinci.h"
 
@@ -311,9 +313,34 @@ static struct spi_board_info dm355_evm_spi_info[] __initconst = {
 	},
 };
 
+static struct resource dm355_gpio_resources[] = {
+	{ /* registers */
+		.start	= DAVINCI_GPIO_BASE,
+		.end	= DAVINCI_GPIO_BASE + SZ_4K - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	{ /* interrupt */
+		.start	= IRQ_DM355_GPIOBNK0,
+		.end	= IRQ_DM355_GPIOBNK6,
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+static struct davinci_gpio_platform_data dm355_gpio_platform_data = {
+	.ngpio = 104,
+	.intc_irq_num = DAVINCI_N_AINTC_IRQ,
+};
+
 static __init void dm355_evm_init(void)
 {
 	struct clk *aemif;
+	int ret;
+
+	ret = davinci_gpio_register(dm355_gpio_resources,
+			sizeof(dm355_gpio_resources),
+			&dm355_gpio_platform_data);
+	if (ret)
+		pr_warn("dm355_evm_init: GPIO init failed: %d\n", ret);
 
 	gpio_request(1, "dm9000");
 	gpio_direction_input(1);

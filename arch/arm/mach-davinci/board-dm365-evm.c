@@ -38,6 +38,7 @@
 #include <linux/platform_data/mmc-davinci.h>
 #include <linux/platform_data/mtd-davinci.h>
 #include <linux/platform_data/keyscan-davinci.h>
+#include <linux/platform_data/gpio-davinci.h>
 
 #include <media/tvp514x.h>
 
@@ -586,8 +587,35 @@ static struct spi_board_info dm365_evm_spi_info[] __initconst = {
 	},
 };
 
+static struct resource dm365_gpio_resources[] = {
+	{ /* registers */
+		.start	= DAVINCI_GPIO_BASE,
+		.end	= DAVINCI_GPIO_BASE + SZ_4K - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	{ /* interrupt */
+		.start	= IRQ_DM365_GPIO0,
+		.end	= IRQ_DM365_GPIO7,
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+static struct davinci_gpio_platform_data dm365_gpio_platform_data = {
+	.ngpio = 104,
+	.intc_irq_num = DAVINCI_N_AINTC_IRQ,
+	.gpio_unbanked = 8,
+};
+
 static __init void dm365_evm_init(void)
 {
+	int ret;
+
+	ret = davinci_gpio_register(dm365_gpio_resources,
+			sizeof(dm365_gpio_resources),
+			&dm365_gpio_platform_data);
+	if (ret)
+		pr_warn("dm365_evm_init: GPIO init failed: %d\n", ret);
+
 	evm_init_i2c();
 	davinci_serial_init(&uart_config);
 

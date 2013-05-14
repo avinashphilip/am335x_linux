@@ -39,6 +39,7 @@
 #include <linux/platform_data/mmc-davinci.h>
 #include <linux/platform_data/usb-davinci.h>
 #include <linux/platform_data/mtd-davinci-aemif.h>
+#include <linux/platform_data/gpio-davinci.h>
 
 #include "davinci.h"
 
@@ -755,10 +756,35 @@ static int davinci_phy_fixup(struct phy_device *phydev)
 
 #define HAS_NAND	IS_ENABLED(CONFIG_MTD_NAND_DAVINCI)
 
+static struct resource dm644_gpio_resources[] = {
+	{ /* registers */
+		.start	= DAVINCI_GPIO_BASE,
+		.end	= DAVINCI_GPIO_BASE + SZ_4K - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	{ /* interrupt */
+		.start	= IRQ_GPIOBNK0,
+		.end	= IRQ_GPIOBNK4,
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+static struct davinci_gpio_platform_data dm644_gpio_platform_data = {
+	.ngpio = 71,
+	.intc_irq_num = DAVINCI_N_AINTC_IRQ,
+};
+
 static __init void davinci_evm_init(void)
 {
+	int ret;
 	struct clk *aemif_clk;
 	struct davinci_soc_info *soc_info = &davinci_soc_info;
+
+	ret = davinci_gpio_register(dm644_gpio_resources,
+			sizeof(dm644_gpio_resources),
+			&dm644_gpio_platform_data);
+	if (ret)
+		pr_warn("davinci_evm_init: GPIO init failed: %d\n", ret);
 
 	aemif_clk = clk_get(NULL, "aemif");
 	clk_prepare_enable(aemif_clk);

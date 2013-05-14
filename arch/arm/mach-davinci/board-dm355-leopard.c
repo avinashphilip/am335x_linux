@@ -25,6 +25,7 @@
 
 #include <linux/platform_data/i2c-davinci.h>
 #include <mach/serial.h>
+#include <mach/common.h>
 #include <linux/platform_data/mtd-davinci.h>
 #include <linux/platform_data/mmc-davinci.h>
 #include <linux/platform_data/usb-davinci.h>
