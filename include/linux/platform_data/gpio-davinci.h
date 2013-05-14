@@ -18,10 +18,37 @@
 #ifndef __ASM_ARCH_DAVINCI_GPIO_H
 #define __ASM_ARCH_DAVINCI_GPIO_H
 
+#include <asm-generic/gpio.h>
+
 struct davinci_gpio_platform_data {
 	u32	ngpio;
 	u32	gpio_unbanked;
 	u32	intc_irq_num;
 };
 
+
+struct davinci_gpio_controller {
+	struct gpio_chip	chip;
+	int			irq_base;
+	spinlock_t		lock;
+	void __iomem		*regs;
+	void __iomem		*set_data;
+	void __iomem		*clr_data;
+	void __iomem		*in_data;
+	int			gpio_unbanked;
+	unsigned		gpio_irq;
+};
+
+/*
+ * basic gpio routines
+ */
+#define	GPIO(X)		(X)	/* 0 <= X <= (DAVINCI_N_GPIO - 1) */
+
+/* Convert GPIO signal to GPIO pin number */
+#define GPIO_TO_PIN(bank, gpio)	(16 * (bank) + (gpio))
+
+static inline u32 __gpio_mask(unsigned gpio)
+{
+	return 1 << (gpio % 32);
+}
 #endif

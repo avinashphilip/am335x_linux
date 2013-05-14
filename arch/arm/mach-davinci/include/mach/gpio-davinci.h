@@ -23,9 +23,10 @@
 
 #define DAVINCI_GPIO_BASE 0x01C67000
 
+#ifdef CONFIG_ARCH_DAVINCI_TNETV107X
+
 enum davinci_gpio_type {
-	GPIO_TYPE_DAVINCI = 0,
-	GPIO_TYPE_TNETV107X,
+	GPIO_TYPE_TNETV107X = 0,
 };
 
 /*
@@ -90,4 +91,5 @@ static inline u32 __gpio_mask(unsigned gpio)
 	return 1 << (gpio % 32);
 }
 
+#endif	/* CONFIG_ARCH_DAVINCI_TNETV107X */
 #endif	/* __DAVINCI_DAVINCI_GPIO_H */
