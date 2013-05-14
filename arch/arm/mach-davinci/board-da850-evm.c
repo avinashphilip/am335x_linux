@@ -28,6 +28,7 @@
 #include <linux/mtd/partitions.h>
 #include <linux/mtd/physmap.h>
 #include <linux/platform_device.h>
+#include <linux/platform_data/gpio-davinci.h>
 #include <linux/platform_data/mtd-davinci.h>
 #include <linux/platform_data/mtd-davinci-aemif.h>
 #include <linux/platform_data/spi-davinci.h>
@@ -42,6 +43,7 @@
 #include <mach/da8xx.h>
 #include <mach/mux.h>
 #include <mach/sram.h>
+#include <mach/common.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
@@ -1138,6 +1140,11 @@ static struct edma_rsv_info *da850_edma_rsv[2] = {
 	&da850_edma_cc1_rsv,
 };
 
+static struct davinci_gpio_platform_data da850_gpio_platform_data = {
+	.ngpio = 144,
+	.intc_irq_num = DA850_N_CP_INTC_IRQ,
+};
+
 #ifdef CONFIG_CPU_FREQ
 static __init int da850_evm_init_cpufreq(void)
 {
@@ -1443,6 +1450,10 @@ static __init int da850_wl12xx_init(void)
 static __init void da850_evm_init(void)
 {
 	int ret;
+
+	ret = da8xx_register_gpio(&da850_gpio_platform_data);
+	if (ret)
+		pr_warn("da850_evm_init: GPIO init failed: %d\n", ret);
 
 	ret = pmic_tps65070_init();
 	if (ret)
