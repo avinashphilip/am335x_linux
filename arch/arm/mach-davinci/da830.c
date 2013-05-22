@@ -20,7 +20,6 @@
 #include <mach/common.h>
 #include <mach/time.h>
 #include <mach/da8xx.h>
-#include <mach/gpio-davinci.h>
 
 #include "clock.h"
 #include "mux.h"

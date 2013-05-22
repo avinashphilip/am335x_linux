@@ -27,7 +27,6 @@
 #include <mach/serial.h>
 #include <mach/common.h>
 #include <linux/platform_data/spi-davinci.h>
-#include <mach/gpio-davinci.h>
 
 #include "davinci.h"
 #include "clock.h"

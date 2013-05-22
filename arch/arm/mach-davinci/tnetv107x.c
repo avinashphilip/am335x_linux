@@ -19,6 +19,7 @@
 #include <linux/io.h>
 #include <linux/err.h>
 #include <linux/platform_device.h>
+#include <linux/platform_data/gpio-davinci.h>
 
 #include <asm/mach/map.h>
 
@@ -30,7 +31,6 @@
 #include <mach/irqs.h>
 #include <mach/hardware.h>
 #include <mach/tnetv107x.h>
-#include <mach/gpio-davinci.h>
 
 #include "clock.h"
 #include "mux.h"

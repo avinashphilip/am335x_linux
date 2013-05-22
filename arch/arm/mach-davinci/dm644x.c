@@ -23,7 +23,6 @@
 #include <mach/time.h>
 #include <mach/serial.h>
 #include <mach/common.h>
-#include <mach/gpio-davinci.h>
 
 #include "davinci.h"
 #include "clock.h"

@@ -28,7 +28,6 @@
 #include <mach/da8xx.h>
 #include <mach/cpufreq.h>
 #include <mach/pm.h>
-#include <mach/gpio-davinci.h>
 
 #include "clock.h"
 #include "mux.h"
