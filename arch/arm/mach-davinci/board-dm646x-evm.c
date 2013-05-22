@@ -39,11 +39,13 @@
 
 #include <mach/common.h>
 #include <mach/serial.h>
+#include <mach/irqs.h>
 #include <linux/platform_data/i2c-davinci.h>
 #include <linux/platform_data/mtd-davinci.h>
 #include <mach/clock.h>
 #include <mach/cdce949.h>
 #include <linux/platform_data/mtd-davinci-aemif.h>
+#include <linux/platform_data/gpio-davinci.h>
 
 #include "davinci.h"
 #include "clock.h"
@@ -787,9 +789,34 @@ static struct edma_rsv_info dm646x_edma_rsv[] = {
 	},
 };
 
+static struct resource dm646_gpio_resources[] = {
+	{ /* registers */
+		.start	= DAVINCI_GPIO_BASE,
+		.end	= DAVINCI_GPIO_BASE + SZ_4K - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	{ /* interrupt */
+		.start	= IRQ_DM646X_GPIOBNK0,
+		.end	= IRQ_DM646X_GPIOBNK2,
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+static struct davinci_gpio_platform_data dm646_gpio_platform_data = {
+	.ngpio = 43,
+	.intc_irq_num = DAVINCI_N_AINTC_IRQ,
+};
+
 static __init void evm_init(void)
 {
+	int ret;
 	struct davinci_soc_info *soc_info = &davinci_soc_info;
+
+	ret = davinci_gpio_register(dm646_gpio_resources,
+			sizeof(dm646_gpio_resources),
+			&dm646_gpio_platform_data);
+	if (ret)
+		pr_warn("evm_init: GPIO init failed: %d\n", ret);
 
 	evm_init_i2c();
 	davinci_serial_init(&uart_config);

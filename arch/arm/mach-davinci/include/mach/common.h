@@ -38,6 +38,8 @@ struct davinci_timer_info {
 
 struct davinci_gpio_controller;
 
+#define DAVINCI_GPIO_BASE 0x01C67000
+
 /*
  * SoC info passed into common davinci modules.
  *
