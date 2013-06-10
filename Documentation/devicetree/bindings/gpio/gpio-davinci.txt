@@ -6,7 +6,7 @@ Required Properties:
 - reg: Physical base address of the controller and length of memory mapped
 	region.
 
-- interrupts: The Starting IRQ number for GPIO
+- interrupts: Array of GPIO interrupt number.
 
 - ngpio: The number of GPIO pins supported
 
@@ -19,7 +19,11 @@ Example:
 gpio: gpio@1e26000 {
 	compatible = "ti,da830-gpio";
 	reg = <0x226000 0x1000>;
-	interrupts = <42>;
+	interrupts = <42 IRQ_TYPE_EDGE_BOTH 43 IRQ_TYPE_EDGE_BOTH
+			44 IRQ_TYPE_EDGE_BOTH 45 IRQ_TYPE_EDGE_BOTH
+			46 IRQ_TYPE_EDGE_BOTH 47 IRQ_TYPE_EDGE_BOTH
+			48 IRQ_TYPE_EDGE_BOTH 49 IRQ_TYPE_EDGE_BOTH
+			50 IRQ_TYPE_EDGE_BOTH>;
 	ngpio = <144>;
 	intc_irq_num = <101>;
 	gpio_unbanked = <0>;
