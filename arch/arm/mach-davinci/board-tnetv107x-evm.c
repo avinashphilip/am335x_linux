@@ -30,6 +30,7 @@
 #include <asm/mach/arch.h>
 #include <asm/mach-types.h>
 
+#include <mach/common.h>
 #include <mach/irqs.h>
 #include <mach/edma.h>
 #include <mach/mux.h>
@@ -147,7 +148,7 @@ static struct davinci_nand_pdata nand_config = {
 	.ecc_bits	= 1,
 };
 
-static struct davinci_uart_config serial_config __initconst = {
+static struct davinci_uart_config serial_config __initdata = {
 	.enabled_uarts	= BIT(1),
 };
 
@@ -245,7 +246,7 @@ static struct ti_ssp_data ssp_config = {
 	},
 };
 
-static struct tnetv107x_device_info evm_device_info __initconst = {
+static struct tnetv107x_device_info evm_device_info __initdata = {
 	.serial_config		= &serial_config,
 	.mmc_config[1]		= &mmc_config,	/* controller 1 */
 	.nand_config[0]		= &nand_config,	/* chip select 0 */
